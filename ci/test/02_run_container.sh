@@ -34,7 +34,8 @@ if [ -z "$DANGER_RUN_CI_ON_HOST" ]; then
       --build-arg "BASE_ROOT_DIR=${BASE_ROOT_DIR}" \
       --label="${CI_IMAGE_LABEL}" \
       --tag="${CONTAINER_NAME}" \
-      "${BASE_READ_ONLY_DIR}"
+      "${BASE_READ_ONLY_DIR}" \
+      --load
 
   docker volume create "${CONTAINER_NAME}_ccache" || true
   docker volume create "${CONTAINER_NAME}_depends" || true
