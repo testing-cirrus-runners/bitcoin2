@@ -532,3 +532,37 @@ jobs:
         with:
           depends-sources-cache-hit: ${{ steps.restore-cache.outputs.depends-sources-cache-hit }}
           depends-built-cache-hit: ${{ steps.restore-cache.outputs.depends-built-cache-hit }}
+
+  lint:
+    name: 'lint'
+    needs: runners
+    runs-on: ${{ needs.runners.outputs.use-cirrus-runners == 'true' && 'ghcr.io/cirruslabs/ubuntu-runner-amd64:24.04-sm' || 'ubuntu-24.04' }}
+    if: ${{ vars.SKIP_BRANCH_PUSH != 'true' || github.event_name == 'pull_request' }}
+    timeout-minutes: 20
+    env:
+      CONTAINER_NAME: "bitcoin-linter"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # For PRs, check out the "preview merge commit"; for other events use default ref
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.ref }}
+
+      - name: Configure Docker
+        uses: ./.github/actions/configure-docker
+        with:
+          use-cirrus: ${{ needs.runners.outputs.use-cirrus-runners }}
+
+      - name: Lint
+        run: |
+          set -o xtrace
+          docker buildx build -t "$CONTAINER_NAME" $DOCKER_BUILD_CACHE_ARG --file "./ci/lint_imagefile" .
+          COMMIT_RANGE=""
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            COMMIT_RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          else
+            COMMIT_RANGE="${{ github.event.before }}..${{ github.event.after }}"
+          fi
+          echo "Linting commit range: $COMMIT_RANGE"
+          docker run --rm -e COMMIT_RANGE="$COMMIT_RANGE" -v "$(pwd)":/bitcoin "$CONTAINER_NAME"
