@@ -630,15 +630,22 @@ jobs:
         uses: crazy-max/ghaction-github-runtime@v3
 
       - name: Set docker build args
-        if: ${{ github.repository == 'bitcoin/bitcoin' }}
         shell: bash
         run: |
           set -x
-          source ${{ env.FILE_ENV }} # This is only used to get the container name
-          if [[ "${{ (github.event_name == 'push') && (github.ref_name == github.event.repository.default_branch) }}" ]]; then
-            echo "DOCKER_BUILD_CACHE_ARG=--cache-from type=gha,url=${CIRRUS_CACHE_HOST},url_v2=${CIRRUS_CACHE_HOST},scope=${CONTAINER_NAME} --cache-to type=gha,url=${CIRRUS_CACHE_HOST},url_v2=${CIRRUS_CACHE_HOST},mode=max,scope=${CONTAINER_NAME} --load" >> $GITHUB_ENV
+
+          # Only set to gha style cache to use cirrus's cache if running on the bitcoin/bitcoin repo
+          # On forks the gha cache will work but will use Github's cache backend
+          if [[ "${{ github.repository }}" == "bitcoin/bitcoin" ]]; then
+            URL_ARGS="url=${{ env.CIRRUS_CACHE_HOST }},url_v2=${{ env.CIRRUS_CACHE_HOST }}"
           else
-            echo "DOCKER_BUILD_CACHE_ARG=--cache-from type=gha,url=${CIRRUS_CACHE_HOST},url_v2=${CIRRUS_CACHE_HOST},scope=${CONTAINER_NAME} --load" >> $GITHUB_ENV
+            URL_ARGS=""
+          fi
+
+          if [[ "${{ (github.event_name == 'push') && (github.ref_name == github.event.repository.default_branch) }}" == "true" ]]; then
+            echo "DOCKER_BUILD_CACHE_ARG=--cache-from type=gha,$URL_ARGS,scope=${{ env.CONTAINER_NAME }} --cache-to type=gha,$URL_ARGS,mode=max,scope=${{ env.CONTAINER_NAME }} --load" >> $GITHUB_ENV
+          else
+            echo "DOCKER_BUILD_CACHE_ARG=--cache-from type=gha,$URL_ARGS,scope=${{ env.CONTAINER_NAME }} --load" >> $GITHUB_ENV
           fi
 
       - name: CI script
