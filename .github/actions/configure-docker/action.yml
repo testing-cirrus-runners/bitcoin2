@@ -26,7 +26,7 @@ runs:
         # Docker will check for variables $ACTIONS_CACHE_URL, $ACTIONS_RESULTS_URL and $ACTIONS_RUNTIME_TOKEN
         # which are set automatically when running on GitHub infra: https://docs.docker.com/build/cache/backends/gha/#synopsis
         #
-        if [[ "${{ github.repository }}" == "bitcoin/bitcoin" ]]; then
+        if [[ "${{ github.repository }}" == "${{ vars.BASE_REPO }}" ]]; then
           URL_ARGS="url=${{ env.CIRRUS_CACHE_HOST }},url_v2=${{ env.CIRRUS_CACHE_HOST }}"
         else
           URL_ARGS=""
