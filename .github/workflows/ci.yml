@@ -324,8 +324,13 @@ jobs:
           driver-opts: |
             network=host
 
-      - name: Expose GitHub Runtime
-        uses: crazy-max/ghaction-github-runtime@v3
+      # This is required to allow buildkit to access the actions cache
+      - name: Expose actions cache variables
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
 
       - name: Set docker build args
         shell: bash
