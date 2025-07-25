@@ -286,7 +286,7 @@ jobs:
   windows-cross:
     name: 'Linux->Windows cross, no tests'
     # We hardcode the repo name here, otherwise PRs, which originate "from a fork", will NOT use cirrus runners.
-    runs-on: ${{ github.repository == 'bitcoin/bitcoin' && 'ghcr.io/cirruslabs/ubuntu-runner-amd64:24.04-md' || 'ubuntu-24.04' }}
+    runs-on: ${{ github.repository == 'testing-cirrus-runners/bitcoin2' && 'ghcr.io/cirruslabs/ubuntu-runner-amd64:24.04-md' || 'ubuntu-24.04' }}
     if: ${{ vars.SKIP_BRANCH_PUSH != 'true' || github.event_name == 'pull_request' }}
 
     env:
@@ -337,9 +337,9 @@ jobs:
         run: |
           source ${{ env.FILE_ENV }} # This is only used to get the container name
           #
-          # Only set to gha style cache to use cirrus's cache if running on the bitcoin/bitcoin repo
+          # Only set to gha style cache to use cirrus's cache if running on the testing-cirrus-runners/bitcoin2 repo
           # On forks the gha cache will work but will use Github's cache backend
-          if [[ "${{ github.repository }}" == "bitcoin/bitcoin" ]]; then
+          if [[ "${{ github.repository }}" == "testing-cirrus-runners/bitcoin2" ]]; then
             URL_ARGS="url=${{ env.CIRRUS_CACHE_HOST }},url_v2=${{ env.CIRRUS_CACHE_HOST }}"
           else
             URL_ARGS=""
@@ -443,7 +443,7 @@ jobs:
 
   ci-matrix:
     name: ${{ matrix.name }}
-    runs-on: ${{ github.repository == 'bitcoin/bitcoin' && matrix.cirrus-runner || matrix.fallback-runner }}
+    runs-on: ${{ github.repository == 'testing-cirrus-runners/bitcoin2' && matrix.cirrus-runner || matrix.fallback-runner }}
 
     if: ${{ vars.SKIP_BRANCH_PUSH != 'true' || github.event_name == 'pull_request' }}
     timeout-minutes: ${{ matrix.timeout-minutes }}
@@ -588,9 +588,9 @@ jobs:
         run: |
           source ${{ env.FILE_ENV }} # This is only used to get the container name
 
-          # Only set to gha style cache to use cirrus's cache if running on the bitcoin/bitcoin repo
+          # Only set to gha style cache to use cirrus's cache if running on the testing-cirrus-runners/bitcoin2 repo
           # On forks the gha cache will work but will use Github's cache backend
-          if [[ "${{ github.repository }}" == "bitcoin/bitcoin" ]]; then
+          if [[ "${{ github.repository }}" == "testing-cirrus-runners/bitcoin2" ]]; then
             URL_ARGS="url=${{ env.CIRRUS_CACHE_HOST }},url_v2=${{ env.CIRRUS_CACHE_HOST }}"
           else
             URL_ARGS=""
@@ -625,7 +625,7 @@ jobs:
 
   lint:
     name: 'lint'
-    runs-on: ${{ github.repository == 'bitcoin/bitcoin' && 'ghcr.io/cirruslabs/ubuntu-runner-amd64:24.04-sm' || 'ubuntu-24.04' }}
+    runs-on: ${{ github.repository == 'testing-cirrus-runners/bitcoin2' && 'ghcr.io/cirruslabs/ubuntu-runner-amd64:24.04-sm' || 'ubuntu-24.04' }}
     if: ${{ vars.SKIP_BRANCH_PUSH != 'true' || github.event_name == 'pull_request' }}
     timeout-minutes: 20
     env:
@@ -652,9 +652,9 @@ jobs:
         run: |
           set -x
 
-          # Only set to gha style cache to use cirrus's cache if running on the bitcoin/bitcoin repo
+          # Only set to gha style cache to use cirrus's cache if running on the testing-cirrus-runners/bitcoin2 repo
           # On forks the gha cache will work but will use Github's cache backend
-          if [[ "${{ github.repository }}" == "bitcoin/bitcoin" ]]; then
+          if [[ "${{ github.repository }}" == "testing-cirrus-runners/bitcoin2" ]]; then
             URL_ARGS="url=${{ env.CIRRUS_CACHE_HOST }},url_v2=${{ env.CIRRUS_CACHE_HOST }}"
           else
             URL_ARGS=""
