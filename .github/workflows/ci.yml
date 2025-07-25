@@ -609,7 +609,7 @@ jobs:
         run: sed -i "s|\${INSTALL_BCC_TRACING_TOOLS}|true|g" ./ci/test/00_setup_env_native_asan.sh
 
       - name: Set mmap_rnd_bits
-        if: ${{ matrix.name == 'TSan, depends, gui' || matrix.name == 'MSan, depends' }}
+        if: ${{ matrix.id == 'tsan-depends-gui' || matrix.id == 'msan-depends' }}
         # Prevents crashes due to high ASLR entropy
         run: sudo sysctl -w vm.mmap_rnd_bits=28
 
