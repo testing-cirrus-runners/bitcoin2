@@ -603,7 +603,7 @@ jobs:
           fi
 
       - name: Enable bpfcc script
-        if: ${{ matrix.name == 'ASan + LSan + UBSan + integer, no depends, USDT' }}
+        if: ${{ matrix.id == 'asan-usdt' }}
         # In the image build step, no external environment variables are available,
         # so any settings will need to be written to the settings env file:
         run: sed -i "s|\${INSTALL_BCC_TRACING_TOOLS}|true|g" ./ci/test/00_setup_env_native_asan.sh
