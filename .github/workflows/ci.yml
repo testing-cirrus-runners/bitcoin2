@@ -328,6 +328,7 @@ jobs:
         uses: crazy-max/ghaction-github-runtime@v3
 
       - name: Set docker build args
+        if: ${{ github.repository == 'bitcoin/bitcoin' }}
         shell: bash
         run: |
           source ${{ env.FILE_ENV }} # This is only used to get the container name
